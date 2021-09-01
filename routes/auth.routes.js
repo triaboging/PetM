@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken')
 const authMiddleWare = require('../middleware/authMiddleWare')
 const { check, validationResult } = require('express-validator')
 const uuid = require('uuid')
+const mailService = require('../service/mailService')
 
 // /api/auth/register
 router.post('/register',
@@ -23,7 +24,7 @@ router.post('/register',
                     message: "Некорректные данные при регистрации"
                 })
             }
-            const { email, password } = req.body
+            const { email, login, password } = req.body
 
 
 
@@ -34,7 +35,7 @@ router.post('/register',
             const hashedPassword = await bcrypt.hash(password, 12)
             const activationLink = uuid.v4()
             console.log('activationLink', activationLink)
-            const user = new User({ email, password: hashedPassword, activationLink })
+            const user = new User({ email, login, password: hashedPassword, activationLink })
             await mailService.sendActivationMail(email, `${config.get("API_URL")}/api/auth/activate/${activationLink}` )
 
             await user.save()

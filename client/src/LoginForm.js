@@ -16,6 +16,8 @@ import { useState } from 'react'
 // import {registration} from '../actions/user'
 import { Formik } from 'formik'
 import * as yup from 'yup'
+import { registration } from './actions/user';
+import { useDispatch } from 'react-redux';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LoginForm(props) {
   const classes = useStyles();
-
+  const dispatch = useDispatch()
   const validationsShema = yup.object().shape({
     email: yup.string().email('Invalid email').required('Required'),
     password: yup.string().min(2,'пароль не надежный')
@@ -119,6 +121,7 @@ export default function LoginForm(props) {
             color="primary"
             className={classes.submit}
             /* onClick = {props.handleClickOpen} */
+           
           >
             Sign In
           </Button>

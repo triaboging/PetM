@@ -16,9 +16,7 @@ if(isAuth) {
             <Route path="/links" exact>
                 {/* <LinksPage /> */}
             </Route>
-            <Route path="/" exact>
-            <MainPage />
-            </Route>
+            
             <Route path='/create' exact>
                 {/* <CreatePost/> */}
             </Route>
@@ -28,21 +26,25 @@ if(isAuth) {
             <Route path='/confirmation' exact>
                 <ConfirmationPage/>
             </Route>
-            <Redirect to="/" />
+            <Route path="/home" exact>
+            <MainPage />
+            </Route>
+            <Redirect to="/home" exact/>
         </Switch>
     )
 } return (
     <Switch>
-        <Route path = "/" exact>
+        
+        <Route path='/confirmation' exact>
+                <ConfirmationPage/>
+        </Route>
+        <Route path = "/home" exact>
             <MainPage />
         </Route>
-         <Route path='/confirmation' exact>
-                <ConfirmationPage/>
-            </Route>
         <Route path="/links" /* component = {AuthPage} *//>
         {/* <Route path="/registration" component = {AuthPage}/>
         <Route path="/login" component = {Login}/> */}
-        <Redirect to="/"/>
+        <Redirect to="/home" exact/>
     </Switch>
 )
 }

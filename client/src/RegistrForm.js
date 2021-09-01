@@ -16,6 +16,8 @@ import { useState } from 'react'
 // import {registration} from '../actions/user'
 import { Formik } from 'formik'
 import * as yup from 'yup'
+import { registration } from './actions/user';
+import { useDispatch } from 'react-redux';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function RegistrForm(props) {
   const classes = useStyles();
-
+  const dispatch = useDispatch()
   const validationsShema = yup.object().shape({
     login: yup.string().min(2,'too shot')
     .max(15,'Too long').required('Required'),
@@ -70,8 +72,8 @@ export default function RegistrForm(props) {
                 }}
                 // validateOnBlur
                 validationSchema = {validationsShema}
-                // onSubmit = {(values) => registration(values.email, values.password)
-                // }
+                onSubmit = {(values) => registration(values.email,values.login, values.password)}
+                
             >
         {({ values, errors, touched, handleChange, handleBlur, isValid, handleSubmit, dirty}) => (
         <form className={classes.form} noValidate>
@@ -141,8 +143,9 @@ export default function RegistrForm(props) {
             color="primary"
             className={classes.submit}
             /* onClick = {props.handleClickOpen} */
+            onClick = {handleSubmit}
           >
-            Sign In
+            Sign Up
           </Button>
           <Grid container>
             <Grid item xs>

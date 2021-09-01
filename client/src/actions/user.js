@@ -3,10 +3,10 @@ import React, { useCallback }  from 'react'
 
 import { setUser, logout, setLoader, createPost } from '../reducers/userReducer'
 import { disableLoader, getPosts } from './../reducers/userReducer';
-export const registration = async (email, password) => {
+export const registration = async (email, login, password) => {
     try{
         const response = await axios.post(`http://localhost:5000/api/auth/register`,
-    {email, password})
+    {email, login, password})
     alert(response.data.message)
     }
     
@@ -26,7 +26,7 @@ export const login =  (email, password, history) => {
         localStorage.setItem('token', response.data.token)
         alert( response.data.message)
         alert( response.data.token)
-        history.push('/links')
+        history.push('/home')
         }
         
         

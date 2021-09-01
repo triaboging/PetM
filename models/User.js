@@ -4,6 +4,7 @@ const schema = new Schema({
     required: true, unique: true
     },
     password: {type: String, required: true},
+    login:{type: String, required: true},
     posts: [{type: Types.ObjectId, ref: 'Posts'}],
     isActivated: {type: Boolean, default: false},
     activationLink: {type: String}

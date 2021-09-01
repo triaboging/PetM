@@ -13,7 +13,9 @@ import Hidden from '@material-ui/core/Hidden';
 import { flexbox } from '@material-ui/system';
 import { CenterFocusStrong } from '@material-ui/icons';
 import {NavDrawer} from './NavDrawer'
-import classNames from 'classnames';
+import clsx from 'clsx';
+import { element } from 'prop-types';
+import { NavLink } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -37,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 
     },
     active:{
-        backgroundColor: 'red'
+        color: 'red'
     },
     toolbar: {
         display: "flex",
@@ -49,6 +51,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 export const NavBar = (props) => {
     const classes = useStyles()
+    const [selectedButton, setSelectedButton] = React.useState()
+    const[active, setActive] = React.useState(false)
+    console.log(active)
+    console.log('from func:', selectedButton)
+    // if(selectedButton === element.name){
+    //     setActive(true)
+    // }
+    const menuStyle = clsx({
+        [classes.menuButtonText] : true, //always applies
+        [classes.active] : active //only when open === true
+    })
     // const [openLoginDialog, setOpenLoginDialog ] = React.useState(false);
     const [windowStatys, setWindowStatus] = React.useState(false)
     function mobileDrawerOpen (){
@@ -63,14 +76,15 @@ export const NavBar = (props) => {
     // function openLoginFunction(){
     //     setOpenLoginDialog(false)
     // }
+    
     const menuItems = [
         {
-            link: "/",
+            link: "/home",
             name: "Home",
             icon: <HomeIcon  className = {classes.text} /* className="text-white" */ />
         },
         {
-            link: "/blog",
+            link: "/confirmation",
             name: "Bloggg",
             icon: <BookIcon className={classes.text} />
         },
@@ -116,7 +130,9 @@ export const NavBar = (props) => {
                             {menuItems.map(element => {
                                 if(element.link){
                                 return (
-                                    <Link
+                                    <NavLink
+                                        // {activeClassName ? classes.active : classes.}
+                                        // activeClassName={classes.active}
                                         key={element.name}
                                         to={element.link}
                                         className={classes.noDecoration}
@@ -128,19 +144,39 @@ export const NavBar = (props) => {
                                             classes={{ text: classes.menuButtonText }}
                                         >
                                             {element.name}
+                                            
                                         </Button>
-                                    </Link>
+                                    </NavLink>
                                 );
                                 }
                                 return (
                                     <Button
                                       color="secondary"
                                       size="large"
-                                      onClick={element.onClick}
+                                     onClick={(e)=>{
+                                        element.onClick(e);
+                                        
+                                        setSelectedButton(element.name);
+                                        
+                                        
+                                        
+                                        // setActive(selectedButton === element.name )
+                                       
+                                    }}
+                                   
+                                       
+                                    //   onClick={()=>{setSelectedButton(element.name)}}
+                                    //   onClick={element.onClick}
+                                    //   {setActive (selectedButton === element.name )}
                                       classes={{ text: classes.menuButtonText  }}
-                                    // className = {classNames{classes.menuButtonText, classes.active}}
+                                    // classes={{ text: classes.menuButtonText, color: classes.active }}
+                                        className = {menuStyle}
+                                    // className = {`${classes.menuButtonText} ${classes.active}`}
+                                //    if (selectedButton.name === element.name ) {}
+                          
                                       key={element.name}
                                     >
+                                        
                                       {element.name}
                                     </Button>
                                   );
