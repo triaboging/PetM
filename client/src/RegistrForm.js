@@ -12,14 +12,13 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { useState } from 'react'
-// import {registration} from '../actions/user'
+import { useState , useContext} from 'react'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 import { registration } from './actions/user';
 import { useDispatch } from 'react-redux';
-
-
+import {Context} from './App'
+// import { CustomizedSnackbars } from './SuccessAlert';
 const useStyles = makeStyles((theme) => ({
   wrappper: {
     marginTop: theme.spacing(1),
@@ -43,6 +42,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function RegistrForm(props) {
+  const message = 'пусто';
+  
+  const context = useContext(Context)
+  console.log('wtf:', context.handleClose)
   const classes = useStyles();
   const dispatch = useDispatch()
   const validationsShema = yup.object().shape({
@@ -52,13 +55,15 @@ export default function RegistrForm(props) {
     password: yup.string().min(2,'пароль не надежный')
     .max(15,'Too long').required('Required'),
   })
+  console.log('context.httpMessage',context.httpMessage)
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.wrappper}>
         <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
+        <LockOutlinedIcon />
         </Avatar>
+        
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
@@ -72,14 +77,16 @@ export default function RegistrForm(props) {
                 }}
                 // validateOnBlur
                 validationSchema = {validationsShema}
-                onSubmit = {(values) => registration(values.email,values.login, values.password)}
+                onSubmit = {(values) => registration(values.email,values.login, values.password, context)}
                 
             >
+              
         {({ values, errors, touched, handleChange, handleBlur, isValid, handleSubmit, dirty}) => (
+        
         <form className={classes.form} noValidate>
           <TextField
             value = {values.login}
-            type = {`text`}
+            type = {`text`}S
             name = { `login`}
             onChange = {handleChange}
             onBlur = {handleBlur}
@@ -94,7 +101,7 @@ export default function RegistrForm(props) {
             autoComplete="login"
             autoFocus
           />
-          {touched.email && errors.email ? <div className = "alert">{errors.login}</div>:<div></div>}
+          {touched.login && errors.login ? <div className = "alert">{errors.login}</div>:<div></div>}
           <TextField
             value = {values.email}
             type = {`text`}
@@ -134,16 +141,15 @@ export default function RegistrForm(props) {
           />
           <Button
             disabled={ !isValid  }
-            onClick = {handleSubmit}
+            onClick = {(e)=>{
+              handleSubmit(e);
+            }}
             type = {`submit`}
             name="action"
-            // type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
-            /* onClick = {props.handleClickOpen} */
-            onClick = {handleSubmit}
           >
             Sign Up
           </Button>
@@ -156,15 +162,14 @@ export default function RegistrForm(props) {
             <Grid item>
               <Link href="#" variant="body2">
                 {"Don't have an account? Sign Up"}
+                {console.log('messageeee:', context.postMessage)}
               </Link>
             </Grid>
           </Grid>
         </form>
         )}
         </Formik>
-        
       </div>
-      
     </Container>
   );
 }

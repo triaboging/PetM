@@ -5,9 +5,9 @@ import { useHistory } from 'react-router';
 import {Context} from './App'
 import { Alert, CustomizedSnackbars } from './SuccessAlert';
 export const ConfirmationPage=()=>{
-const setDialogOpen = useContext(Context)
+const {setDialogOpen, handleClose} = useContext(Context)
 let history = useHistory()
-     const [start, setStart] = React.useState(true)
+    const [start, setStart] = React.useState(true)
     const [timer, setTimer] = React.useState(500)
     
    let timerRef = useRef()

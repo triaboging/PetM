@@ -4,11 +4,13 @@ const SETLOADER = 'SETLOADER'
 const DISABLELOADER = 'DISABLELOADER'
 const CREATEPOST = 'CREATEPOST'
 const GETPOSTS = 'GETPOSTS'
+const SETHTTPMESSAGE = 'SETHTTPMESSAGE'
 const initialState = {
 currentUser: {},
 isAuth: false,
 loading: false,
-posts:[]
+posts:[],
+httpMessage:''
 }
 export default function userReducer (state = initialState, action) {
     switch(action.type){
@@ -48,7 +50,11 @@ export default function userReducer (state = initialState, action) {
                 //  posts: [...state.posts, ...action.payload]
                 posts: action.payload
             }
-       
+        case SETHTTPMESSAGE:
+            return{
+                ...state,
+                httpMessage: action.payload
+            }
         default:
              return state
     }
@@ -59,3 +65,4 @@ export const setLoader = () => ({type: SETLOADER})
 export const disableLoader = () =>({type: DISABLELOADER})
 export const createPost = (post) =>({type: CREATEPOST, payload: post})
 export const getPosts = (posts) => ({type: GETPOSTS, payload: posts})
+export const getHttpMessage = (newmessage) =>({type: SETHTTPMESSAGE, payload: newmessage})

@@ -18,6 +18,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { useRoutes } from './routes';
 import Loader from './components/Loading/Loading';
 import { useSelector, Provider } from 'react-redux';
+import { CustomizedSnackbars } from './SuccessAlert';
 AOS.init({ once: true });
 export const Context = createContext(null)
 
@@ -85,6 +86,18 @@ function App() {
   const routes = useRoutes()
   const [dialogOpen, setDialogOpen] = React.useState(null);
   const [openState, setOpenState ] = React.useState(false);
+  const [httpMessage, setHttpMassage] = React.useState(null)
+  const [openAlert, setOpenAlert] = React.useState(false);
+  
+  function closeAlertFunction(){
+    setOpenAlert(false);
+  };
+  console.log('httpMessage:',httpMessage)
+  function setStatusMessage(message){
+    setHttpMassage(message);
+    setOpenAlert(true);
+
+  }
   function openLoginFunction(){
    setDialogOpen('login')
    setOpenState(true)
@@ -102,9 +115,10 @@ function App() {
     setDialogOpen('login')
     setOpenState(true)
   }
+  
   return (
     <BrowserRouter >
-    <Context.Provider value = {openLoginFunction}>
+    <Context.Provider value = {{openLoginFunction, handleClose, setStatusMessage, httpMessage}}>
     <div className = {classes.root}>
       <CssBaseline />
       <NavBar 
@@ -119,7 +133,11 @@ function App() {
       {/* <Login/> */}
       <main className={classes.main}>
         {routes}
-      
+        <CustomizedSnackbars 
+        message = {httpMessage} 
+        openAlert={openAlert}
+        closeAlertFunction={closeAlertFunction}
+        />
       </main>
       <Footer/>
     </div>

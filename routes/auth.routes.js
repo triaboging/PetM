@@ -30,7 +30,7 @@ router.post('/register',
 
             const candidate = await User.findOne({ email: email })
             if (candidate) {
-                res.status(400).json({ message: 'Taкой пользователь уже усть...' })
+                res.status(400).json({ message: 'Taкой пользователь уже есть...' })
             }
             const hashedPassword = await bcrypt.hash(password, 12)
             const activationLink = uuid.v4()

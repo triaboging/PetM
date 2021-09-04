@@ -1,19 +1,34 @@
 import axios from 'axios'
-import React, { useCallback }  from 'react'
-
+import React, { useCallback, useContext }  from 'react'
+import { Context } from '../App'
 import { setUser, logout, setLoader, createPost } from '../reducers/userReducer'
 import { disableLoader, getPosts } from './../reducers/userReducer';
-export const registration = async (email, login, password) => {
+
+export const registration = async (email, login, password, context) => {
+    
     try{
+        
         const response = await axios.post(`http://localhost:5000/api/auth/register`,
     {email, login, password})
-    alert(response.data.message)
+    const message =  response.data.message
+    console.log('fromfuncmessage', context.httpMessage)
+    // alert(message)
+        context.setStatusMessage(message)
+        if(message === 'Пользователь создан'){
+            context.handleClose()
+           
+            
+        }
+        
     }
     
     catch(e){
-        alert(e.response.data.message)
+        // alert(e.response.data.message)
+        const message =  e.response.data.message
+        context.setStatusMessage(message)
         console.log(e)
     }
+    
 }
 export const login =  (email, password, history) => {
     
