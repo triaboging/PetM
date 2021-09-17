@@ -17,6 +17,12 @@ import SelectForm from './SelectForm';
 const useStyles = makeStyles((theme)=> ({
 root: {
     borderRadius: "10px"
+},
+// formClass: {
+//  width: "500px"
+// },
+newStyle: {
+  width: "400px"
 }
 }))
 
@@ -36,12 +42,13 @@ root: {
     // };
     return(
        
-        <Dialog  open={props.open} 
-        
-        onClose={props.handleClose} aria-labelledby="form-dialog-title" className = {classes.formClass}>
-        <DialogTitle style={{textAlign: "center"}} id="form-dialog-title">
+        <Dialog  open={props.open } 
+        // fullWidth
+        onClose={props.handleClose} aria-labelledby="form-dialog-title" classes={{paperWidthSm: classes.newStyle}}>
+        <DialogTitle style={{textAlign: "center"}} id="form-dialog-title" className={classes.widthpoint}>
         {props.dialogOpen==='login'&&  'Авторизуйтесь'} 
         {props.dialogOpen==='registr'&&  'Зарегестрируйтесь'}
+        {props.dialogOpen==='restore'&&  'Забыли пароль?'}
          </DialogTitle>
             {/* <LoginForm /> */}
             {/* <RegistrForm/> */}

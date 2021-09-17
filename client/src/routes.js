@@ -1,15 +1,18 @@
 import React from 'react'
 import {Switch, Route, Redirect} from 'react-router-dom'
-// import { LinksPage } from './pages/LinksPage'
-// import { AuthPage } from './pages/AuthPage'
-// import { Login } from './components/Login'
 import { useSelector } from 'react-redux'
 import { ConfirmationPage } from './ConfirmationPage'
 import { MainPage } from './MainPage'
-// import { CreatePost } from './components/CreatePost/CreatePost';
-// import { DetailPage } from './pages/DetailPage';
+import { ConfirmationMailPage } from './ConfirmationMailPage';
 export const useRoutes = () => {
     const isAuth = useSelector(state => state.userReducer.isAuth)
+    const isActivated = useSelector(state => state.userReducer.isActivated)
+    const confirmationMessage = `akk has been confirmated...
+    Вы будите переадресованы на страницу аутентификации через`;
+    const confirmationMailMessage =  `На указанный почтовый ящик было отправлено письмо с подтверждение регистраци <br/>
+    Вы будите автоматически переадресованы на страницу аутентификации через `
+    const confirmationPasswordMessage = ` На указанный почтовый ящик было отправлено письмо с новым паролем <br/>
+    Вы будите автоматически переадресованы на страницу аутентификации через`
 if(isAuth) {
     return(
         <Switch>
@@ -26,6 +29,7 @@ if(isAuth) {
             <Route path='/confirmation' exact>
                 <ConfirmationPage/>
             </Route>
+           
             <Route path="/home" exact>
             <MainPage />
             </Route>
@@ -34,16 +38,19 @@ if(isAuth) {
     )
 } return (
     <Switch>
-        
+        <Route path='/restore' exact>
+                <ConfirmationPage message = {confirmationPasswordMessage}/>
+        </Route>
         <Route path='/confirmation' exact>
-                <ConfirmationPage/>
+                <ConfirmationPage message = {confirmationMessage}/>
         </Route>
         <Route path = "/home" exact>
             <MainPage />
         </Route>
-        <Route path="/links" /* component = {AuthPage} *//>
-        {/* <Route path="/registration" component = {AuthPage}/>
-        <Route path="/login" component = {Login}/> */}
+        <Route path='/confirmationmailpage' exact>
+                <ConfirmationPage massage = {confirmationMailMessage}/>
+        </Route>
+    
         <Redirect to="/home" exact/>
     </Switch>
 )

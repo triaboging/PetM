@@ -9,13 +9,14 @@ const authMiddleWare = require('../middleware/authMiddleWare')
 const { check, validationResult } = require('express-validator')
 const uuid = require('uuid')
 const mailService = require('../service/mailService')
+const ApiError = require('../error/ApiError')
 
 // /api/auth/register
 router.post('/register',
     [check('email', 'некорректный email').isEmail(),
     check('password', 'минимальная длина пароля 6 символов').isLength({ min: 6 })
     ],
-    async (req, res) => {
+    async ( req, res, next) => {
         try {
             const errors = validationResult(req)
             if (!errors.isEmpty()) {
@@ -30,7 +31,9 @@ router.post('/register',
 
             const candidate = await User.findOne({ email: email })
             if (candidate) {
-                res.status(400).json({ message: 'Taкой пользователь уже есть...' })
+                return next(ApiError.badRequest('Такой пользователь уже есть......'))
+                // res.status(400).json({ message: 'Taкой пользователь уже есть...' })
+                
             }
             const hashedPassword = await bcrypt.hash(password, 12)
             const activationLink = uuid.v4()
@@ -41,7 +44,8 @@ router.post('/register',
             await user.save()
             res.status(201).json({ message: 'Пользователь создан' })
         } catch (e) {
-            res.status(500).json({ message: "хмм, вот ведь незадача, что-то пошло не так" })
+            // res.status(500).json({ message: "хмм, вот ведь незадача, что-то пошло не так" })
+            next( ApiError.internal("хмм, вот ведь незадача, что-то пошло не так"))
             console.log(e)
         }
     })
@@ -49,7 +53,7 @@ router.post('/register',
 router.post('/login',
     [check('email', 'Введите корректный email').normalizeEmail().isEmail(),
     check('password', 'Введите пароль').exists()]
-    , async (req, res) => {
+    , async (req, res, next) => {
         try {
             console.log('hhhhhhhh')
             const errors = validationResult(req)
@@ -57,30 +61,35 @@ router.post('/login',
                 return res.status(400).json({
                     errors: errors.array(),
                     massage: "Некорректные данные при входе в систему"
+                
                 })
             }
             const { email, password } = req.body
             const user = await User.findOne({ email: email })
             if (!user) {
-                return res.status(400).json({ message: 'Пользователь не найден' })
+                // return res.status(400).json({ message: 'Пользователь не найден' })
+                return next(ApiError.badRequest('Пользователь не найден'))
             }
             const isMatch = await bcrypt.compare(password, user.password)
             if (!isMatch) {
-                return res.status(400).json({
-                    massage: 'неверный пароль'
-                })
+                // return res.status(400).json({
+                //     massage: 'неверный пароль'
+                
+                // })
+                return next(ApiError.badRequest('Неверный пароль'))
             }
             const token = jwt.sign({ id: user.id },//хешируем userID
                 config.get('jwtSecret'),
-                { expiresIn: '1h' }
+                { expiresIn: '24h' }
             )
             res.json({
                 token,
                 user: {
                     id: user.id,
-                    email: user.email
+                    email: user.email,
+                    isActivated: user.isActivated
                 },
-                message: 'Пользователь  найден'
+                message: 'Пользователь найден'
             })
 
             // const hashedPassword = await bcrypt.hash(password, 12)
@@ -88,7 +97,46 @@ router.post('/login',
             // await user.save()
             // res.status(201).json({message: 'Пользователь создан'})
         } catch (e) {
-            res.status(500).json({ message: "хмм, вот ведь незадача, что-то пошло не так" })
+            // res.status(500).json({ message: "хмм, что-то пошло не так, try again" })
+            // console.log(e)
+            next( ApiError.internal("хмм, вот ведь незадача, что-то пошло не так"))
+            console.log(e)
+           
+        }
+    })
+
+    router.post('/restore',
+    [check('email', 'некорректный email').normalizeEmail().isEmail(),
+    check('login', 'некорректный login').not().isEmpty().trim().escape()],  
+    async(req, res, next)=> {
+        try {
+            const errors = validationResult(req)
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    errors: errors.array(),
+                    message: "Некорректные данные при регистрации"
+                })
+            }
+            const {login, email } = req.body
+            const user = await User.findOne({email: email})
+            if(!user){
+                return next(ApiError.badRequest('Пользователь не найден'))
+            }
+            if(user.login !== login){
+                return next(ApiError.badRequest('Неверный login'))
+            }
+            let password = uuid.v4()
+            
+            let upgratepassword =  password.replace(/-/g,'t').slice(0,10)
+            const hashedPassword = await bcrypt.hash(upgratepassword, 12)
+            console.log(upgratepassword)
+            await User.updateOne({ email: email }, {$set:{password: hashedPassword}})
+            await mailService.sendRestorePasswordMail(email, upgratepassword )
+            return  res.json({message: 'новый пароль был отправлен на почту'})
+            // res.redirect('http://localhost:3000/restore')
+           
+        }catch(e){
+            next( ApiError.internal("хмм, вот ведь незадача, что-то пошло не так"))
             console.log(e)
         }
     })
@@ -134,7 +182,7 @@ router.get('/auth', authMiddleWare,
         const user = await User.findOne({_id: req.user.id })
         const token = jwt.sign({ id: user.id },//хешируем userID
             config.get('jwtSecret'),
-            { expiresIn: '1h' }
+            { expiresIn: '24h' }
         )
         
         return res.json({
@@ -142,7 +190,8 @@ router.get('/auth', authMiddleWare,
             
             user: {
                 id: user.id,
-                email: user.email
+                email: user.email,
+                isActivated: user.isActivated
             },
             message: 'Пользователь прошел аутентифиакацию и обновил token'
         })

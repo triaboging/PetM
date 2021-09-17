@@ -35,16 +35,28 @@ export  function CustomizedSnackbars(props) {
     props.closeAlertFunction()
   };
   
-    if (props.message === 'Пользователь создан'){
-      console.log('равно')
+    // if (props.message === 'Пользователь создан'){
+    //   console.log('равно')
+    // }else{console.log('хрен там')}
+    // let alertType;
+    // switch (props.message) {
+    //   case 'Пользователь создан': alertType ="success"; break;
+    //   case 'Taкой пользователь уже есть...' : alertType ="warning";break;
+    //   default: alertType ="error"
+    // }
+    
+    if (props.message && props.message.message === 'Пользователь создан'){
+      console.log('место 100', props.message)
     }else{console.log('хрен там')}
     let alertType;
-    switch (props.message) {
-      case 'Пользователь создан': alertType ="success"; break;
-      case 'Taкой пользователь уже есть...' : alertType ="warning";break;
+    if(!props.message){
+      return null
+    }
+    switch (props.message.status) {
+      case 'good': alertType ="success"; break;
+      case 'bad' : alertType ="error";break;
       default: alertType ="error"
     }
-  
   return (
     <div className={classes.root}>
       {/* <Button variant="outlined" onClick={handleClick}>
@@ -55,7 +67,7 @@ export  function CustomizedSnackbars(props) {
         <Alert onClose={handleClose} 
         
         severity={alertType}>
-          {props.message}
+          {props.message.message}
         </Alert>
       </Snackbar>
       {/* <Alert severity="error">This is an error message!</Alert>

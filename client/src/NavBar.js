@@ -4,6 +4,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import HomeIcon from "@material-ui/icons/Home";
 import HowToRegIcon from "@material-ui/icons/HowToReg";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
+import ToggleOffIcon from '@material-ui/icons/ToggleOff';
 import BookIcon from "@material-ui/icons/Book";
 import IconButton from '@material-ui/core/IconButton';
 import { AppBar, Button, Link, Toolbar, Typography } from '@material-ui/core';
@@ -16,7 +17,8 @@ import {NavDrawer} from './NavDrawer'
 import clsx from 'clsx';
 import { element } from 'prop-types';
 import { NavLink } from 'react-router-dom';
-
+import { useSelector, useDispatch } from 'react-redux';
+import {logout} from './reducers/userReducer'
 
 const useStyles = makeStyles((theme) => ({
     logo: {
@@ -30,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     noDecoration: {
         textDecoration: "none !important"
     },
+
     menuButtonText: {
         fontSize: theme.typography.body1.fontSize,
         fontWeight: theme.typography.h6.fontWeight,
@@ -50,6 +53,8 @@ const useStyles = makeStyles((theme) => ({
       }
 }));
 export const NavBar = (props) => {
+    const dispatch = useDispatch()
+    const isAuth = useSelector(state => state.userReducer.isAuth)
     const classes = useStyles()
     const [selectedButton, setSelectedButton] = React.useState()
     const[active, setActive] = React.useState(false)
@@ -76,29 +81,60 @@ export const NavBar = (props) => {
     // function openLoginFunction(){
     //     setOpenLoginDialog(false)
     // }
+    let menuItems
+    if(isAuth){
+          menuItems = [
+            {
+                link: "/home",
+                name: "Home",
+                icon: <HomeIcon  className = {classes.text} /* className="text-white" */ />
+            },
+            {
+                link: "/confirmation",
+                name: "Bloggg",
+                icon: <BookIcon className={classes.text} />
+            },
+            {
+                name: "Register",
+                onClick: props.openRegisterDialog,
+                icon: <HowToRegIcon className={classes.text} />
+            },
+            {
+                name: "Login",
+                onClick: props.openLoginFunction,
+                icon: <LockOpenIcon className={classes.text} />
+            },
+            {
+                name: "Выход",
+                onClick: () => dispatch(logout()),
+                icon: <ToggleOffIcon className={classes.text} />
+            }
+        ];
+    }else{
+          menuItems = [
+            {
+                link: "/home",
+                name: "Home",
+                icon: <HomeIcon  className = {classes.text} /* className="text-white" */ />
+            },
+            {
+                link: "/confirmation",
+                name: "Bloggg",
+                icon: <BookIcon className={classes.text} />
+            },
+            {
+                name: "Register",
+                onClick: props.openRegisterDialog,
+                icon: <HowToRegIcon className={classes.text} />
+            },
+            {
+                name: "Login",
+                onClick: props.openLoginFunction,
+                icon: <LockOpenIcon className={classes.text} />
+            }
+        ];
+    }
     
-    const menuItems = [
-        {
-            link: "/home",
-            name: "Home",
-            icon: <HomeIcon  className = {classes.text} /* className="text-white" */ />
-        },
-        {
-            link: "/confirmation",
-            name: "Bloggg",
-            icon: <BookIcon className={classes.text} />
-        },
-        {
-            name: "Register",
-            onClick: props.openRegisterDialog,
-            icon: <HowToRegIcon className={classes.text} />
-        },
-        {
-            name: "Login",
-            onClick: props.openLoginFunction,
-            icon: <LockOpenIcon className={classes.text} />
-        }
-    ];
     return (
         <div className={classes.root}>
             <CssBaseline />

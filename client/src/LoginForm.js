@@ -1,4 +1,4 @@
-import React from 'react';
+import React ,  {useContext} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,8 +16,10 @@ import { useState } from 'react'
 // import {registration} from '../actions/user'
 import { Formik } from 'formik'
 import * as yup from 'yup'
-import { registration } from './actions/user';
+import { login } from './actions/user';
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router';
+import { Context } from './App';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    borderRadius: '10px !important'
+    
   },
   avatar: {
     margin: theme.spacing(1),
@@ -43,6 +45,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LoginForm(props) {
+  const context = useContext(Context)
+  const history = useHistory()
   const classes = useStyles();
   const dispatch = useDispatch()
   const validationsShema = yup.object().shape({
@@ -50,6 +54,16 @@ export default function LoginForm(props) {
     password: yup.string().min(2,'пароль не надежный')
     .max(15,'Too long').required('Required'),
   })
+  function handleClick(e){
+    e.preventDefault();
+    context.handleClose();
+    context.openRestoreFormFunction()
+  }
+  function openRegisterFuntion(e){
+    e.preventDefault();
+    context.handleClose();
+    context.openRegisterDialog();
+  }
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -70,8 +84,7 @@ export default function LoginForm(props) {
                 }}
                 // validateOnBlur
                 validationSchema = {validationsShema}
-                // onSubmit = {(values) => registration(values.email, values.password)
-                // }
+                onSubmit = {(values) => dispatch(login(values.email, values.password, context, history ))}
             >
         {({ values, errors, touched, handleChange, handleBlur, isValid, handleSubmit, dirty}) => (
         <form className={classes.form} noValidate>
@@ -125,14 +138,23 @@ export default function LoginForm(props) {
           >
             Sign In
           </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
+          <Grid container >
+            <Grid item xs={6} >
+              <Link 
+              href="#" variant="body2"
+              onClick={(e)=>
+                handleClick(e, context)
+              }>
                 Forgot password?
               </Link>
             </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
+            <Grid item xs={6}   >
+
+              <Link href="#" variant="body2"
+              onClick = {(e)=>{
+                openRegisterFuntion(e, context)}}
+              >
+
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

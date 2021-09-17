@@ -9,9 +9,13 @@ const config = require('config')
 const app = express()
 const cors = require('./middleware/cors.js')
 // const cors = require('cors')
+const errorHandler = require('./middleware/ErrorHandlerMiddleware.js')
 app.use(cors)
 app.use(express.json())
 app.use("/api/auth" , authRouter)
+
+// Обработка ошибок, подключать middleware only before
+app.use(errorHandler)
 const PORT = config.get('port') || 5000
 async function start(){
     try{

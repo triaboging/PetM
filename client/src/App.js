@@ -1,5 +1,5 @@
 import logo from './logo.svg';
-import React, { createContext } from 'react'
+import React, { createContext, useEffect } from 'react'
 import './App.css';
 import { makeStyles } from '@material-ui/core/styles';
 import { NavBar } from './NavBar';
@@ -17,8 +17,9 @@ import Form from './Form';
 import { BrowserRouter } from 'react-router-dom';
 import { useRoutes } from './routes';
 import Loader from './components/Loading/Loading';
-import { useSelector, Provider } from 'react-redux';
+import { useSelector, Provider, useDispatch } from 'react-redux';
 import { CustomizedSnackbars } from './SuccessAlert';
+import {auth} from './actions/user'
 AOS.init({ once: true });
 export const Context = createContext(null)
 
@@ -81,28 +82,42 @@ videoText:{
 }))
 function App() {
   const classes = useStyles()
+  
   const isAuth = useSelector(state => state.userReducer.isAuth)
   const loader = useSelector(state => state.userReducer.loading)
   const routes = useRoutes()
   const [dialogOpen, setDialogOpen] = React.useState(null);
   const [openState, setOpenState ] = React.useState(false);
-  const [httpMessage, setHttpMassage] = React.useState(null)
+  const [httpMessage, setHttpMassage] = React.useState({
+    message:" ",
+    status:" "
+  })
   const [openAlert, setOpenAlert] = React.useState(false);
-  
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(auth())
+}, [])
   function closeAlertFunction(){
     setOpenAlert(false);
   };
-  console.log('httpMessage:',httpMessage)
+  
   function setStatusMessage(message){
     setHttpMassage(message);
     setOpenAlert(true);
 
   }
+  console.log('httpMessageeeeeeefdfdf:',httpMessage)
   function openLoginFunction(){
    setDialogOpen('login')
    setOpenState(true)
    
   }
+  
+  function openRestoreFormFunction(){
+    setDialogOpen('restore')
+    setOpenState(true)
+    
+   }
   function handleClose() {
     setOpenState(false)
     setDialogOpen(null)
@@ -118,18 +133,21 @@ function App() {
   
   return (
     <BrowserRouter >
-    <Context.Provider value = {{openLoginFunction, handleClose, setStatusMessage, httpMessage}}>
+    <Context.Provider value = {{openLoginFunction, handleClose,
+       setStatusMessage, httpMessage,  openRestoreFormFunction, openRegisterDialog}}>
     <div className = {classes.root}>
       <CssBaseline />
       <NavBar 
       openRegisterDialog={openRegisterDialog}
       openLoginDialog={openLoginDialog}
-      openLoginFunction={openLoginFunction}/>
+      openLoginFunction={openLoginFunction}
+      />
       {loader && <Loader/>}
       
       <Form  handleClose={handleClose}
       open={openState}
-      dialogOpen={dialogOpen}/>
+      dialogOpen={dialogOpen}
+     />
       {/* <Login/> */}
       <main className={classes.main}>
         {routes}

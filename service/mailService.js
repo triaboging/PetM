@@ -35,6 +35,19 @@ class MailService {
 
         })
     }
+    async sendRestorePasswordMail(to, password){
+        await this.transporter.sendMail({
+                    to,
+                    from: 'izajcev997@gmail.com',
+                    subject: 'Восстановление пароля',
+                    html: `
+                    <h1>Восстановление пароля</h1>
+                    
+                    <p>Ваш новый пароль: ${password}</p>
+                    <hr/>`
+
+        })
+    }
 }
 module.exports = new MailService()
 

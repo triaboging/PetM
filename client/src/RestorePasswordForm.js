@@ -19,6 +19,7 @@ import { registration } from './actions/user';
 import { useDispatch } from 'react-redux';
 import {Context} from './App'
 import { useHistory } from 'react-router';
+import {restorePassword} from './actions/user'
 // import { CustomizedSnackbars } from './SuccessAlert';
 const useStyles = makeStyles((theme) => ({
   wrappper: {
@@ -40,13 +41,10 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-  formfooter:{
-    textAlign: "center"
-  }
   
 }));
 
-export default function RegistrForm(props) {
+export default function RestorePasswordForm(props) {
   const history = useHistory()
   const context = useContext(Context)
   console.log('wtf:', context.handleClose)
@@ -56,12 +54,12 @@ export default function RegistrForm(props) {
     login: yup.string().min(2,'too shot')
     .max(15,'Too long').required('Required'),
     email: yup.string().email('Invalid email').required('Required'),
-    password: yup.string().min(2,'пароль не надежный')
-    .max(15,'Too long').required('Required'),
+    // password: yup.string().min(2,'пароль не надежный')
+    // .max(15,'Too long').required('Required'),
   })
   console.log('context.httpMessage',context.httpMessage)
   return (
-    <Container component="main" /* maxWidth="xs" */ >
+    <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.wrappper}>
         <Avatar className={classes.avatar}>
@@ -69,7 +67,7 @@ export default function RegistrForm(props) {
         </Avatar>
         
         <Typography component="h1" variant="h5">
-          Sign up
+          Forgot password?
         </Typography>
         
             <Formik 
@@ -77,12 +75,12 @@ export default function RegistrForm(props) {
                 initialValues={{
                 login:"",
                 email: "",
-                password: ""
+                
                 }}
                 // validateOnBlur
                 validationSchema = {validationsShema}
                 onSubmit = {
-                  (values) => registration(values.email,values.login, values.password, history, context)
+                  (values) => {dispatch(restorePassword(values.email,values.login, context, history ))}
                 // .then(()=>{
                 //   alert('все хорошо!')
                 // }).catch(()=>{
@@ -131,7 +129,7 @@ export default function RegistrForm(props) {
             
           />
           {touched.email && errors.email ? <div className = "alert">{errors.email}</div>:<div></div>}
-          <TextField
+          {/* <TextField
             value = {values.password}
             type = {`password`}
             id = "password"
@@ -144,17 +142,15 @@ export default function RegistrForm(props) {
             label="Password"
             
             autoComplete="current-password"
-          />
-          {touched.password && errors.password ? <div className = "alert">{errors.password}</div>:<div></div>}
+          /> */}
+          {/* {touched.password && errors.password ? <div className = "alert">{errors.password}</div>:<div></div>} */}
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
           <Button
             disabled={ !isValid  }
-            onClick = {(e)=>{
-              handleSubmit(e);
-            }}
+            onClick = {handleSubmit}
             type = {`submit`}
             name="action"
             fullWidth
@@ -162,21 +158,21 @@ export default function RegistrForm(props) {
             color="primary"
             className={classes.submit}
           >
-            Sign Up
+            Send
           </Button>
-          <Grid container justifyContent="flex-end">
-            {/* <Grid item xs>
+          {/* <Grid container>
+            <Grid item xs>
               <Link href="#" variant="body2">
                 Forgot password?
               </Link>
-            </Grid> */}
-            <Grid item /* style={{marginLeft: "200px"}} */ /* xs={8}  *//* className={classes.formfooter} */>
+            </Grid>
+            <Grid item>
               <Link href="#" variant="body2">
-                {"Have account? Sign in"}
+                {"Don't have an account? Sign Up"}
                 {console.log('messageeee:', context.postMessage)}
               </Link>
             </Grid>
-          </Grid>
+          </Grid> */}
         </form>
         )}
         </Formik>

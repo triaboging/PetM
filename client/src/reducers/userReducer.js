@@ -10,7 +10,8 @@ currentUser: {},
 isAuth: false,
 loading: false,
 posts:[],
-httpMessage:''
+httpMessage:'',
+isActivated: false
 }
 export default function userReducer (state = initialState, action) {
     switch(action.type){
@@ -26,8 +27,8 @@ export default function userReducer (state = initialState, action) {
             return{
                 ...state,
                 currentUser: action.payload,
-                isAuth: true,
-                loading: false
+                loading: false,
+                isAuth: action.payload.isActivated
             }
         case LOGOUT:
             localStorage.removeItem('token')
